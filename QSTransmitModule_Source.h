@@ -8,10 +8,13 @@
 
 
 #import "QSTransmitModule_Source.h"
+#import "Transmit.h"
 
-@interface QSTransmitSource : NSObject
+@interface QSTransmitSource : QSObjectSource
 {
+    TransmitApplication *transmit;
 }
 - (NSString *)URLForTransmitDict:(NSDictionary *)dict;
+- (QSObject *)objectForFavorite:(Favorite *)curFavorite subpath:(NSString *)subpath;
+- (NSString *)URLForFavorite:(Favorite *)fav subpath:(NSString *)subpath;
 @end
-

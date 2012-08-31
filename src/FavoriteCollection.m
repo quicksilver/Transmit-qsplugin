@@ -6,7 +6,7 @@
 
 //static NSImage *genericFolderImage = nil;
 
-int CompareByName(id obj1, id obj2, void* context)
+NSInteger CompareByName(id obj1, id obj2, void* context)
 {
 	NSString*	name1	= nil;
 	NSString*	name2	= nil;
