@@ -2,27 +2,29 @@
 //  QSTransmitModule_Source.m
 //  QSTransmitModule
 //
-//  Created by Nicholas Jitkoff on 7/12/04.
+//  Created by Nicholas Jitkoff on 7/12/04.p
 //  Copyright __MyCompanyName__ 2004. All rights reserved.
 //
+
 #import "src/FavoriteCollection.h"
-#import "Favorite.h"
+#import "src/Favorite.h"
 
 #import "QSTransmitModule_Source.h"
-#import <QSCore/QSCore.h>
 
-#import <QSFoundation/QSFoundation.h>
-
-#define TRANSMIT_ID @"com.panic.Transmit3"
+#define TRANSMIT_ID @"com.panic.Transmit"
 #define QSTransmitSiteType @"QSTransmitSiteType"
+#define kQSTransmitConnectAction @"QSTransmitConnectAction"
+
+#define kValidURLSchemes [NSArray arrayWithObjects:@"ftp",@"sftp",@"ftps",nil]
+
 
 @implementation FavoriteCollection (BLTRConvenience)
 + (FavoriteCollection *)mainCollection{
-	NSString *prefsPath = [@"~/Library/Preferences/com.panic.Transmit3.plist" stringByStandardizingPath];
+	NSString *prefsPath = [@"~/Library/Preferences/com.panic.Transmit.plist" stringByExpandingTildeInPath];
 	NSDictionary *prefsDict = [NSDictionary dictionaryWithContentsOfFile:prefsPath];
 	if ( prefsDict )
 	{
-		NSData *storedData = [prefsDict objectForKey:@"Collections2"];
+		NSData *storedData = [prefsDict objectForKey:@"FavoriteCollections"];
 		if ( storedData )
 		{		
 			return [NSKeyedUnarchiver unarchiveObjectWithData:storedData];
@@ -35,24 +37,62 @@
 
 //NSURLPboardType
 @implementation QSTransmitSource
+
+-(id)init {
+    if (self = [super init]) {
+        transmit = [[SBApplication applicationWithBundleIdentifier:@"com.panic.Transmit"] retain];
+    }
+    return self;
+}
+
+-(void)dealloc {
+    [transmit release];
+    [super dealloc];
+}
+
+#pragma mark Object Action Methods
+
+- (NSArray *)validActionsForDirectObject:(QSObject *)dObject indirectObject:(QSObject *)iObject {
+    BOOL connectToIsValid;
+    for (QSObject *eachObject in [dObject splitObjects]) {
+    connectToIsValid = NO;
+    if ([[eachObject primaryType] isEqualToString:QSTransmitSiteType]) {
+        connectToIsValid = YES;
+        continue;
+    } else if ([eachObject objectForType:QSURLType]) {
+        if ([kValidURLSchemes containsObject:[[NSURL URLWithString:[eachObject objectForType:QSURLType]] scheme]]) {
+            connectToIsValid = YES;
+            continue;
+        }
+    }
+    }
+    if (connectToIsValid) {
+        return [NSArray arrayWithObject:kQSTransmitConnectAction];
+    } else {
+        return nil;
+    }
+}
+
+#pragma mark Object Source Methods
+
 - (BOOL)indexIsValidFromDate:(NSDate *)indexDate forEntry:(NSDictionary *)theEntry{
-	NSDate *modDate=[[[NSFileManager defaultManager] fileAttributesAtPath:[@"~/Library/Preferences/com.panic.Transmit3.plist" stringByStandardizingPath] traverseLink:YES]fileModificationDate];
+	NSDate *modDate=[[[NSFileManager defaultManager] attributesOfItemAtPath:[@"~/Library/Preferences/com.panic.Transmit.plist" stringByStandardizingPath] error:nil]fileModificationDate];
 	return [modDate compare:indexDate]==NSOrderedAscending;
 }
 
 - (void)setQuickIconForObject:(QSObject *)object{
-	[object setIcon:[QSResourceManager imageNamed:@"com.panic.Transmit3"]];	
+	[object setIcon:[QSResourceManager imageNamed:@"com.panic.Transmit"]];	
 }
 
-- (NSImage *) iconForEntry:(NSDictionary *)dict{
+- (NSImage *) iconForEntry:(NSDictionary *)dict {
     return [QSResourceManager imageNamed:TRANSMIT_ID];
 }
-- (BOOL)loadChildrenForObject:(QSObject *)object{
+
+- (BOOL)loadChildrenForObject:(QSObject *)object {
 	if ([object containsType:QSFilePathType]){
 		[object setChildren:[self objectsForEntry:nil]];
 		return YES;   	
-	}else{
-		
+	} else {
 		if([object objectForMeta:@"QSObjectSubpath"])return NO;
 		NSString *uuid=[object objectForType:QSTransmitSiteType];
 			Favorite *fav=[[FavoriteCollection mainCollection]itemWithUUID:uuid];
@@ -75,29 +115,9 @@
 
 
 - (NSArray *) objectsForEntry:(NSDictionary *)theEntry{
-	NSFileManager *fm=[NSFileManager defaultManager];
-	NSString *metadataPath=[@"~/Library/Caches/Metadata/Transmit" stringByStandardizingPath];
-	
-	NSDirectoryEnumerator *de=[fm enumeratorAtPath:metadataPath];
 	
 	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:1];
 	QSObject *newObject;
-	NSString *key;
-	
-	//
-	//	NSString *path;
-	//	while (path=[de nextObject]){
-	//		NSDictionary *dict=[NSDictionary dictionaryWithContentsOfFile:[metadataPath stringByAppendingPathComponent:path]];
-	//		
-	//		newObject=[QSObject objectWithName:[dict objectForKey:@"com_panic_transmit_nickname"]];
-	//		NSString *url=[self URLForNewTransmitDict:dict];
-	//		
-	//		[newObject setObject:dict forType:QSTransmitSiteType];
-	//		[newObject setObject:url forType:QSURLType];
-	//		[newObject setPrimaryType:QSURLType];
-	//		[newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-	//		[objects addObject:newObject];
-	//	}
 	
 	{
 		FavoriteCollection *rootCollection=[FavoriteCollection mainCollection];
@@ -149,89 +169,6 @@
 }
 
 
-- (NSArray *) alternateObjectsForEntry:(NSDictionary *)theEntry{
-	NSFileManager *fm=[NSFileManager defaultManager];
-	NSString *metadataPath=[@"~/Library/Caches/Metadata/Transmit" stringByStandardizingPath];
-	
-	NSDirectoryEnumerator *de=[fm enumeratorAtPath:metadataPath];
-	
-	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:1];
-	QSObject *newObject;
-	NSString *key;
-	
-	
-	NSString *path;
-	while (path=[de nextObject]){
-		NSDictionary *dict=[NSDictionary dictionaryWithContentsOfFile:[metadataPath stringByAppendingPathComponent:path]];
-		
-		newObject=[QSObject objectWithName:[dict objectForKey:@"com_panic_transmit_nickname"]];
-		NSString *url=[self URLForNewTransmitDict:dict];
-		
-		[newObject setObject:dict forType:QSTransmitSiteType];
-		[newObject setObject:url forType:QSURLType];
-		[newObject setPrimaryType:QSURLType];
-		[newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-		[objects addObject:newObject];
-	}
-	
-    return objects;
-    
-}
-
-
-
-//- (NSArray *) anotheroldobjectsForEntry:(NSDictionary *)theEntry{
-//    NSArray *collections= (NSArray *)CFPreferencesCopyAppValue((CFStringRef)@"Collections",(CFStringRef) TRANSMIT_ID);
-//	
-//	//NSLog(@"collections %@",[NSKeyedUnarchiver unarchiveObjectWithData:collections]);
-//    [collections autorelease];
-//	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:1];
-//	QSObject *newObject;
-//	NSString *key;
-//	
-//	foreach(collection, collections){
-//		NSArray *contents=[collection objectForKey:@"CollectionContents"];
-//		NSDictionary *thisFavorite;
-//		NSEnumerator *e=[contents objectEnumerator];
-//		while(thisFavorite=[e nextObject]){
-//			newObject=[QSObject objectWithName:[thisFavorite objectForKey:@"Nickname"]];
-//			NSString *url=[self URLForTransmitDict:thisFavorite];
-//			
-//			[newObject setObject:thisFavorite forType:QSTransmitSiteType];
-//			[newObject setObject:url forType:QSURLType];
-//			[newObject setPrimaryType:QSURLType];
-//			[newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-//			[objects addObject:newObject];
-//		}
-//	}
-//    return objects;
-//    
-//}
-/*
- - (NSArray *) oldObjectsForEntry:(NSDictionary *)theEntry{
-	 NSArray *favorites= (NSArray *)CFPreferencesCopyAppValue((CFStringRef)@"Favorites",(CFStringRef) TRANSMIT_ID);
-	 [favorites autorelease];
-	 
-	 
-	 NSMutableArray *objects=[NSMutableArray arrayWithCapacity:1];
-	 QSObject *newObject;
-	 NSString *key;
-	 NSDictionary *thisFavorite;
-	 NSEnumerator *e=[favorites objectEnumerator];
-	 while(thisFavorite=[e nextObject]){
-		 newObject=[QSObject objectWithName:[thisFavorite objectForKey:@"Nickname"]];
-		 NSString *url=[self URLForTransmitDict:thisFavorite];
-		 
-		 [newObject setObject:thisFavorite forType:QSTransmitSiteType];
-		 [newObject setObject:url forType:QSURLType];
-		 [newObject setPrimaryType:QSURLType];
-		 [newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-		 [objects addObject:newObject];
-	 }
-	 return objects;
-	 
- }
- */
 /*
  tell application "Transmit"
 	run
@@ -267,10 +204,14 @@
 		(remotePort?[@":" stringByAppendingString:remotePort]:@""),
 		([initialPath length]?[@"/" stringByAppendingString:initialPath]:@"")
 		];
+	
+	return string;
 }
 - (NSString *)URLForFavorite:(Favorite *)fav subpath:(NSString *)subpath{
 	NSString *initialPath=subpath?subpath:[fav initialRemotePath];
-	if (![initialPath hasPrefix:@"/"])initialPath=[@"/" stringByAppendingString:initialPath];
+	if (initialPath && ![initialPath hasPrefix:@"/"]) {
+		initialPath=[@"/" stringByAppendingString:initialPath];
+	}
 	NSString *protocol=[fav protocol];
 	NSString *remoteHost=[fav server];
 	NSString *remotePassword=nil;
@@ -295,6 +236,8 @@
 		(remotePort?[@":" stringByAppendingString:remotePort]:@""),
 		([initialPath length]?[initialPath URLEncoding]:@"")
 		];
+	
+	return string;
 }
 
 
@@ -325,6 +268,8 @@
 		(remotePort?remotePort:@""),
 		([initialPath length]?[@"/" stringByAppendingString:initialPath]:@"")
 		];
+	
+	return string;
 }
 
 
@@ -348,82 +293,72 @@
 
 
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)iObject{
-	return [self objectsForEntry:nil]; 
+    if ([action isEqualToString:@"QSTransmitUploadAction"]) {
+        return [self objectsForEntry:nil];
+    }
+    return nil;
 }
 
+-(QSObject *)connectToSite:(QSObject* )dObject {
+    return [self connectToSite:dObject shouldMount:NO];
+}
+
+-(QSObject *)mountSite:(QSObject* )dObject {
+    return [self connectToSite:dObject shouldMount:YES];
+}
+
+
+-(QSObject *)connectToSite:(QSObject* )dObject shouldMount:(BOOL)shouldMount{
+    for (QSObject *individualObject in [dObject splitObjects]) {
+        NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
+        if (uuid) {
+            
+            TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
+            TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
+            [[transmit documents] addObject:newDocument];
+            [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
+            if (shouldMount) {
+                // close the transmit window if we're just mounting it
+                [newDocument closeSaving:TransmitSaveOptionsNo savingIn:nil];
+            }
+        } else if (uuid = [individualObject objectForType:QSURLType]) {
+            NSURL *url = [NSURL URLWithString:uuid];
+            if (url) {
+                [[NSWorkspace sharedWorkspace] openURLs:[NSArray arrayWithObject:url] withAppBundleIdentifier:TRANSMIT_ID options:0 additionalEventParamDescriptor:nil launchIdentifiers:nil];
+                 }
+        }
+    }
+return nil;
+}
 -(QSObject *)uploadFiles:(QSObject *)dObject toSite:(QSObject *)iObject{
 	//NSLog(@"objects %@ %@",dObject,iObject);	
-	
-	NSString *path=[[NSBundle bundleForClass:[self class]]pathForResource:@"Transmit" ofType:@"scpt"];
-	NSAppleScript *script=nil;
-	if (path)
-		script=[[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil]autorelease];
-	
-	NSString *uuid=[iObject objectForType:QSTransmitSiteType];
-	Favorite *favorite=[[FavoriteCollection mainCollection]itemWithUUID:uuid];
-	
-	//NSString *initialPath=[dict objectForKey:@"InitialPath"];
-	
-	NSString *site=[favorite server];
-	NSString *port=[favorite port]?[NSString stringWithFormat:@"%d",[favorite port]]:nil;
-	NSString *user=[favorite username];
-	
-	if (!port)port=@"";
-	NSString *pass=@"";//[dict objectForKey:@"RemotePassword"];
-		
-		BOOL prompt=[favorite promptForPassword];
-		if (!prompt)pass=@"PasswordInKeychain";
-		
-		
-		NSString *initialPath=[iObject objectForMeta:@"QSObjectSubpath"];
-		if (!initialPath)initialPath=[favorite initialRemotePath];
-		
-		NSString *protocol=[favorite protocol];
-		NSString *your_stuff=@"";
-		
-		
-		NSArray *arguments=[NSArray arrayWithObjects:site,port,user,pass,protocol,initialPath,@"",[dObject validPaths],nil];
-		//NSLog(@"args %@",arguments);
-		NSDictionary *dict=nil;
-		[script executeSubroutine:@"upload_to_site" arguments:arguments error:&dict];
-		if (dict)NSLog(@"Upload Error: %@",dict);
-		
-		return nil;	
-}
+    
+    // incase the user used the comma trick on the 3rd pane
+    for (QSObject *individualObject in [iObject splitObjects]) {
+        
+        NSString *uuid=[iObject objectForType:QSTransmitSiteType];
+        
+        // get the Tranmit favorite
+        TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
 
-//-(QSObject *)oldUploadFiles:(QSObject *)dObject toSite:(QSObject *)iObject{
-//	NSLog(@"objects %@ %@",dObject,iObject);	
-//	
-//	NSString *path=[[NSBundle bundleForClass:[self class]]pathForResource:@"Transmit" ofType:@"scpt"];
-//	NSAppleScript *script=nil;
-//	if (path)
-//		script=[[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil]autorelease];
-//	
-//	NSDictionary *dict=[iObject objectForType:QSTransmitSiteType];
-//	//NSString *initialPath=[dict objectForKey:@"InitialPath"];
-//	
-//	NSString *site=[dict objectForKey:@"com_panic_transmit_server"];
-//	NSString *port=[dict objectForKey:@"com_panic_transmit_port"];
-//	NSString *user=[dict objectForKey:@"com_panic_transmit_username"];
-//	
-//	if (!port)port=@"";
-//	NSString *pass=@"";//[dict objectForKey:@"RemotePassword"];
-//		
-//		BOOL prompt=[[dict objectForKey:@"com_panic_transmit_promptPassword"]boolValue];
-//		if (!prompt)pass=@"PasswordInKeychain";
-//		
-//		NSString *initialPath=[dict objectForKey:@"com_panic_transmit_remotePath"];
-//		
-//		NSString *protocol=[dict objectForKey:@"com_panic_transmit_protocol"];
-//		NSString *your_stuff=@"";
-//		
-//		
-//		NSArray *arguments=[NSArray arrayWithObjects:site,port,user,pass,protocol,initialPath,@"",[dObject validPaths],nil];
-//		dict=nil;
-//		[script executeSubroutine:@"upload_to_site" arguments:arguments error:&dict];
-//		if (dict)NSLog(@"Upload Error: %@",dict);
-//		
-//		return nil;	
-//}
+        if (!theFavorite) {
+            NSBeep();
+            NSLog(@"Unable to locate the favorite for %@",iObject);
+        }
+        
+        TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
+        [[transmit documents] addObject:newDocument];
+        
+        [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:NO];
+        
+        for (NSString *path in [dObject validPaths]) {
+            [[[newDocument currentTab] remoteBrowser] uploadItemAtPath:path to:nil withResumeMode:TransmitResumetypeAsk continueAfterError:YES usingSkipRules:nil];
+        }
+        
+        [newDocument closeSaving:TransmitSaveOptionsNo savingIn:nil];
+        
+    }
+	return nil;	
+}
 
 @end

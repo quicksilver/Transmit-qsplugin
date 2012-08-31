@@ -6,7 +6,7 @@
 
 - (IBAction)loadFavorites:(id)sender
 {
-	NSString *prefsPath = [@"~/Library/Preferences/com.panic.Transmit3.plist" stringByExpandingTildeInPath];
+	NSString *prefsPath = [@"~/Library/Preferences/com.panic.Transmit.plist" stringByExpandingTildeInPath];
 	NSDictionary *prefsDict = [NSDictionary dictionaryWithContentsOfFile:prefsPath];
 	
 	if ( prefsDict )
@@ -24,9 +24,7 @@
 			NSLog(@"Loaded favorites");
 			
 			while ( (curCollection = [enumerator nextObject]) != nil )
-			{
-				NSLog([curCollection name]);
-				
+			{				
 				NSEnumerator *subEnumerator = [[curCollection allObjects] objectEnumerator];
 				Favorite *curFavorite;
 				
