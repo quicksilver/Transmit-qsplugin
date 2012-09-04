@@ -309,10 +309,12 @@
 
 
 -(QSObject *)connectToSite:(QSObject* )dObject shouldMount:(BOOL)shouldMount{
+    if (!shouldMount) {
+        [transmit activate];
+    }
     for (QSObject *individualObject in [dObject splitObjects]) {
         NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
         if (uuid) {
-            
             TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
             TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
             [[transmit documents] addObject:newDocument];
