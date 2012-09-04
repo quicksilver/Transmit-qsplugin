@@ -1,27 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Transmit Module</string>
+	<string>Transmit Plugin</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.blacktree.Quicksilver.QSTransmitModule</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Transmit 3 Module</string>
+	<string>Transmit 4 Plugin</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>4.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>daed</string>
 	<key>CFBundleVersion</key>
-	<string>DD</string>
+	<string>F9</string>
 	<key>NSPrincipalClass</key>
 	<string>QSTransmitModule</string>
 	<key>QSActions</key>
 	<dict>
+		<key>QSTransmitConnectAction</key>
+		<dict>
+			<key>actionClass</key>
+			<string>QSTransmitSource</string>
+			<key>actionSelector</key>
+			<string>connectToSite:</string>
+			<key>directTypes</key>
+			<array>
+				<string>QSTransmitSiteType</string>
+				<string>Apple URL pasteboard type</string>
+			</array>
+			<key>icon</key>
+			<string>com.panic.Transmit</string>
+			<key>name</key>
+			<string>Connect</string>
+			<key>precedence</key>
+			<string>1</string>
+			<key>validatesObjects</key>
+			<string>YES</string>
+		</dict>
+		<key>QSTransmitMountAction</key>
+		<dict>
+			<key>actionClass</key>
+			<string>QSTransmitSource</string>
+			<key>actionSelector</key>
+			<string>mountSite:</string>
+			<key>directTypes</key>
+			<array>
+				<string>QSTransmitSiteType</string>
+			</array>
+			<key>icon</key>
+			<string>com.panic.Transmit</string>
+			<key>name</key>
+			<string>Mount as Disk</string>
+			<key>precedence</key>
+			<string>0.5</string>
+		</dict>
 		<key>QSTransmitUploadAction</key>
 		<dict>
 			<key>actionClass</key>
@@ -33,9 +72,32 @@
 				<string>NSFilenamesPboardType</string>
 			</array>
 			<key>icon</key>
-			<string>com.panic.Transmit3</string>
+			<string>com.panic.Transmit</string>
 			<key>name</key>
-			<string>Upload to Site...</string>
+			<string>Upload to Site…</string>
+			<key>validatesObjects</key>
+			<false/>
+		</dict>
+		<key>QSTransmitUploadActionReverse</key>
+		<dict>
+			<key>actionClass</key>
+			<string>QSTransmitSource</string>
+			<key>actionSelector</key>
+			<string>uploadFiles:toSite:</string>
+			<key>directTypes</key>
+			<array>
+				<string>QSTransmitSiteType</string>
+			</array>
+			<key>icon</key>
+			<string>com.panic.Transmit</string>
+			<key>indirectTypes</key>
+			<array>
+				<string>NSFilenamesPboardType</string>
+			</array>
+			<key>name</key>
+			<string>Upload File(s)…</string>
+			<key>reverseArguments</key>
+			<string>YES</string>
 			<key>validatesObjects</key>
 			<false/>
 		</dict>
@@ -52,14 +114,23 @@
 		<key>description</key>
 		<string>Favorites Access &amp; Uploading</string>
 		<key>extendedDescription</key>
-		<string>Favorites Access &amp; Uploading&lt;h3&gt;Enhancements&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;Adds Transmit favorites to catalog&lt;li&gt;Favorites contain links to all the remote sidebar locations&lt;li&gt;An upload action allows sending files to favorites or their sidebar links&lt;/ul&gt;&lt;h3&gt;Version Changes&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;Sidebar links are now accessible&lt;/ul&gt;</string>
+		<string>&lt;h2&gt;Transmit Plugin&lt;/h2&gt;
+&lt;p&gt;The Transmit Plugin allows you to interact with your Transmit favorites, upload files to them, and open and mount FTP/SFTP etc. URLs in Transmit&lt;/p&gt;
+&lt;h3&gt;Catalog&lt;/h3&gt;
+&lt;p&gt;The Transmit Plugin adds a 'Transmit Favorites' catalog entry to the Quicksilver, which can be seen in the 'Plugins' section of the &lt;a href="qs://preferences#QSCatalogPrefPane"&gt;Catalog preferences&lt;/a&gt;. Enabling this entry means you can search for your Transmit favourites in Quicksilver's 1st pane.&lt;/p&gt;
+&lt;p&gt;You can also get a full list of your Transmit Favorites by finding 'Transmit.app' in Quicksilver's 1st pane, and pressing the right arrow key &lt;code&gt;→&lt;/code&gt; (or the forward slash key &lt;code&gt;/&lt;/code&gt;).&lt;/p&gt;
+&lt;h3&gt;Actions&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Connect&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This action opens an FTP URL or a Transmit Favorite in Transmit. Supported URL schemes are &lt;code&gt;ftp://&lt;/code&gt;, &lt;code&gt;sftp://&lt;/code&gt; and &lt;code&gt;ftps://&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Mount as Disk&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The 'Mount as Disk' action uses TransmitDisk to mount the specified transmit Favorites as a mounted disk on your Desktop. This action is only valid for Transmit Favorite objects&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Upload to Site… and Upload File…&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;These actions upload single or multiple files to a given Transmit Favorite. The 'Upload to Site…' action takes a list of files (using Quicksilver's comma trick) in Quicksilver's 1st pane and requires a Transmit Favorite in Quicksilver's 3rd pane. The 'Upload File…' action is a reverse of this, requiring a Transmit Favorite in the 1st pane and a list of files in the 3rd pane.&lt;/p&gt;</string>
 		<key>icon</key>
-		<string>com.panic.Transmit3</string>
-		<key>qsversion</key>
-		<string>2000</string>
+		<string>com.panic.Transmit</string>
 		<key>relatedBundles</key>
 		<array>
-			<string>com.panic.Transmit3</string>
+			<string>com.panic.Transmit</string>
 		</array>
 	</dict>
 	<key>QSPresetAdditions</key>
@@ -77,7 +148,7 @@
 	<dict>
 		<key>QSBundleChildHandlers</key>
 		<dict>
-			<key>com.panic.Transmit3</key>
+			<key>com.panic.Transmit</key>
 			<string>QSTransmitSource</string>
 		</dict>
 		<key>QSObjectHandlers</key>

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7F4EE859083570B2000731DA /* BonjourCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE84D083570B2000731DA /* BonjourCollection.m */; };
-		7F4EE85A083570B2000731DA /* DotMacCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE84F083570B2000731DA /* DotMacCollection.m */; };
 		7F4EE85B083570B2000731DA /* Favorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE851083570B2000731DA /* Favorite.m */; };
 		7F4EE85C083570B2000731DA /* FavoriteCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE853083570B2000731DA /* FavoriteCollection.m */; };
 		7F4EE85D083570B2000731DA /* HistoryCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE855083570B2000731DA /* HistoryCollection.m */; };
@@ -16,24 +14,32 @@
 		7FA98545096F1B8600321006 /* QSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA98543096F1B8600321006 /* QSCore.framework */; };
 		7FA98546096F1B8600321006 /* QSFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA98544096F1B8600321006 /* QSFoundation.framework */; };
 		8D1AC9700486D14A00FE50C9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD92D38A0106425D02CA0E72 /* Cocoa.framework */; };
-		E11FE9590732EDEB00A043D1 /* Transmit.scpt in Resources */ = {isa = PBXBuildFile; fileRef = E11FE9580732EDEB00A043D1 /* Transmit.scpt */; };
+		CDF9828B1590817400FFFA7B /* Transmit.app in Resources */ = {isa = PBXBuildFile; fileRef = CDF9828A1590817400FFFA7B /* Transmit.app */; };
+		CDF98295159081F700FFFA7B /* Transmit.app in Sources */ = {isa = PBXBuildFile; fileRef = CDF9828A1590817400FFFA7B /* Transmit.app */; };
+		CDF982F61590872800FFFA7B /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDF982F51590872800FFFA7B /* ScriptingBridge.framework */; };
 		E188770406A3A42600B75D22 /* QSTransmitModule_Source.m in Sources */ = {isa = PBXBuildFile; fileRef = E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		CDF982961590820A00FFFA7B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.app";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_FILES_DIR)/$(INPUT_FILE_BASE).h",
+			);
+			script = "sdef \"$INPUT_FILE_PATH\" | sdp -fh -o \"$DERIVED_FILES_DIR\" --basename \"$INPUT_FILE_BASE\" --bundleid `defaults read \"$INPUT_FILE_PATH/Contents/Info\" CFBundleIdentifier`";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		14D9D0AF10D0FC7F00BEABA0 /* Common.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		14D9D0B010D0FC7F00BEABA0 /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		14D9D0B110D0FC7F00BEABA0 /* Developer.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Developer.xcconfig; sourceTree = "<group>"; };
-		14D9D0B210D0FC7F00BEABA0 /* QSPlugIn_Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = QSPlugIn_Debug.xcconfig; sourceTree = "<group>"; };
-		14D9D0B310D0FC7F00BEABA0 /* QSPlugIn_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QSPlugIn_Prefix.pch; sourceTree = "<group>"; };
-		14D9D0B410D0FC7F00BEABA0 /* QSPlugIn_Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = QSPlugIn_Release.xcconfig; sourceTree = "<group>"; };
 		14D9D0B510D0FC7F00BEABA0 /* QSPlugIn.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = QSPlugIn.xcconfig; sourceTree = "<group>"; };
 		14D9D0B610D0FC7F00BEABA0 /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		32DBCF980370C29C00C91783 /* QSTransmitModule_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QSTransmitModule_Prefix.pch; sourceTree = "<group>"; };
-		7F4EE84C083570B2000731DA /* BonjourCollection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = BonjourCollection.h; sourceTree = "<group>"; };
-		7F4EE84D083570B2000731DA /* BonjourCollection.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = BonjourCollection.m; sourceTree = "<group>"; };
-		7F4EE84E083570B2000731DA /* DotMacCollection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DotMacCollection.h; sourceTree = "<group>"; };
-		7F4EE84F083570B2000731DA /* DotMacCollection.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = DotMacCollection.m; sourceTree = "<group>"; };
 		7F4EE850083570B2000731DA /* Favorite.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Favorite.h; sourceTree = "<group>"; };
 		7F4EE851083570B2000731DA /* Favorite.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = Favorite.m; sourceTree = "<group>"; };
 		7F4EE852083570B2000731DA /* FavoriteCollection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FavoriteCollection.h; sourceTree = "<group>"; };
@@ -43,15 +49,14 @@
 		7F4EE856083570B2000731DA /* Loader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Loader.h; sourceTree = "<group>"; };
 		7F4EE857083570B2000731DA /* Loader.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = Loader.m; sourceTree = "<group>"; };
 		7F4EE858083570B2000731DA /* LocaleMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = LocaleMacros.h; sourceTree = "<group>"; };
-		7FA98543096F1B8600321006 /* QSCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSCore.framework; sourceTree = QSFrameworks; };
-		7FA98544096F1B8600321006 /* QSFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSFoundation.framework; sourceTree = QSFrameworks; };
+		7FA98543096F1B8600321006 /* QSCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FA98544096F1B8600321006 /* QSFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1AC9730486D14A00FE50C9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8D1AC9740486D14A00FE50C9 /* Transmit Module.qsplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Transmit Module.qsplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1AC9740486D14A00FE50C9 /* Transmit Plugin.qsplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Transmit Plugin.qsplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1AC97B0486D23100FE50C9 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		CDF9828A1590817400FFFA7B /* Transmit.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; name = Transmit.app; path = /Applications/Transmit.app; sourceTree = "<absolute>"; };
+		CDF982F51590872800FFFA7B /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
 		DD92D38A0106425D02CA0E72 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		E11FE9580732EDEB00A043D1 /* Transmit.scpt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.scpt; path = Transmit.scpt; sourceTree = "<group>"; };
-		E191E08E068932EF00525DB6 /* QSTransmitModule_Action.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSTransmitModule_Action.h; sourceTree = "<group>"; };
-		E191E08F068932EF00525DB6 /* QSTransmitModule_Action.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSTransmitModule_Action.m; sourceTree = "<group>"; };
 		E191E090068932EF00525DB6 /* QSTransmitModule_Source.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSTransmitModule_Source.h; sourceTree = "<group>"; };
 		E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSTransmitModule_Source.m; sourceTree = "<group>"; };
 		E1EAB045068128A200774DFF /* QSTransmitModule.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSTransmitModule.m; sourceTree = "<group>"; };
@@ -63,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDF982F61590872800FFFA7B /* ScriptingBridge.framework in Frameworks */,
 				8D1AC9700486D14A00FE50C9 /* Cocoa.framework in Frameworks */,
 				7FA98545096F1B8600321006 /* QSCore.framework in Frameworks */,
 				7FA98546096F1B8600321006 /* QSFoundation.framework in Frameworks */,
@@ -75,10 +81,9 @@
 		0259C574FE90428111CA0C5A /* QSTransmitModule */ = {
 			isa = PBXGroup;
 			children = (
+				CDF9828A1590817400FFFA7B /* Transmit.app */,
 				14D9D0AC10D0FC6A00BEABA0 /* Configuration */,
 				32DBCF9E0370C38000C91783 /* Classes */,
-				32DBCF9F0370C38200C91783 /* Other Sources */,
-				E1127F960695F44F008AE6A3 /* Templates */,
 				0259C582FE90428111CA0C5A /* Resources */,
 				1ED78706FE9D4A0611CA0C5A /* Products */,
 				2E58F364FFB232C311CA0CBA /* Frameworks */,
@@ -89,7 +94,6 @@
 		0259C582FE90428111CA0C5A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E11FE9580732EDEB00A043D1 /* Transmit.scpt */,
 				8D1AC9730486D14A00FE50C9 /* Info.plist */,
 				8D1AC97F0486D23B00FE50C9 /* InfoPlist.strings */,
 			);
@@ -102,19 +106,17 @@
 				14D9D0AF10D0FC7F00BEABA0 /* Common.xcconfig */,
 				14D9D0B010D0FC7F00BEABA0 /* Debug.xcconfig */,
 				14D9D0B110D0FC7F00BEABA0 /* Developer.xcconfig */,
-				14D9D0B210D0FC7F00BEABA0 /* QSPlugIn_Debug.xcconfig */,
-				14D9D0B310D0FC7F00BEABA0 /* QSPlugIn_Prefix.pch */,
-				14D9D0B410D0FC7F00BEABA0 /* QSPlugIn_Release.xcconfig */,
 				14D9D0B510D0FC7F00BEABA0 /* QSPlugIn.xcconfig */,
 				14D9D0B610D0FC7F00BEABA0 /* Release.xcconfig */,
 			);
-			path = Configuration;
-			sourceTree = QS_SOURCE_ROOT;
+			name = Configuration;
+			path = /private/tmp/QS/Configuration;
+			sourceTree = "<absolute>";
 		};
 		1ED78706FE9D4A0611CA0C5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1AC9740486D14A00FE50C9 /* Transmit Module.qsplugin */,
+				8D1AC9740486D14A00FE50C9 /* Transmit Plugin.qsplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -122,6 +124,7 @@
 		2E58F364FFB232C311CA0CBA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CDF982F51590872800FFFA7B /* ScriptingBridge.framework */,
 				7FA98543096F1B8600321006 /* QSCore.framework */,
 				7FA98544096F1B8600321006 /* QSFoundation.framework */,
 				DD92D38A0106425D02CA0E72 /* Cocoa.framework */,
@@ -133,27 +136,17 @@
 			isa = PBXGroup;
 			children = (
 				7F4EE84B083570B2000731DA /* src */,
+				E1EAB047068128A800774DFF /* QSTransmitModule.h */,
 				E1EAB045068128A200774DFF /* QSTransmitModule.m */,
+				E191E090068932EF00525DB6 /* QSTransmitModule_Source.h */,
+				E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */,
 			);
 			name = Classes;
-			sourceTree = "<group>";
-		};
-		32DBCF9F0370C38200C91783 /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				32DBCF980370C29C00C91783 /* QSTransmitModule_Prefix.pch */,
-				E1EAB047068128A800774DFF /* QSTransmitModule.h */,
-			);
-			name = "Other Sources";
 			sourceTree = "<group>";
 		};
 		7F4EE84B083570B2000731DA /* src */ = {
 			isa = PBXGroup;
 			children = (
-				7F4EE84C083570B2000731DA /* BonjourCollection.h */,
-				7F4EE84D083570B2000731DA /* BonjourCollection.m */,
-				7F4EE84E083570B2000731DA /* DotMacCollection.h */,
-				7F4EE84F083570B2000731DA /* DotMacCollection.m */,
 				7F4EE850083570B2000731DA /* Favorite.h */,
 				7F4EE851083570B2000731DA /* Favorite.m */,
 				7F4EE852083570B2000731DA /* FavoriteCollection.h */,
@@ -167,38 +160,27 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		E1127F960695F44F008AE6A3 /* Templates */ = {
-			isa = PBXGroup;
-			children = (
-				E191E08F068932EF00525DB6 /* QSTransmitModule_Action.m */,
-				E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */,
-				E191E08E068932EF00525DB6 /* QSTransmitModule_Action.h */,
-				E191E090068932EF00525DB6 /* QSTransmitModule_Source.h */,
-			);
-			name = Templates;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1AC9600486D14A00FE50C9 /* Transmit Module */ = {
+		8D1AC9600486D14A00FE50C9 /* Transmit Plugin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7FFF2593085E488700266176 /* Build configuration list for PBXNativeTarget "Transmit Module" */;
+			buildConfigurationList = 7FFF2593085E488700266176 /* Build configuration list for PBXNativeTarget "Transmit Plugin" */;
 			buildPhases = (
-				7F6EEADD07D3E32F00AFE018 /* ShellScript */,
+				E1B9F2A907A2020B00B4017B /* Update Version and Documentation */,
 				8D1AC9660486D14A00FE50C9 /* Resources */,
 				8D1AC96A0486D14A00FE50C9 /* Sources */,
 				8D1AC96E0486D14A00FE50C9 /* Frameworks */,
-				E1B9F2A907A2020B00B4017B /* ShellScript */,
 			);
 			buildRules = (
+				CDF982961590820A00FFFA7B /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
-			name = "Transmit Module";
+			name = "Transmit Plugin";
 			productInstallPath = "$(HOME)/Developer/Palettes";
 			productName = QSTransmitModule;
-			productReference = 8D1AC9740486D14A00FE50C9 /* Transmit Module.qsplugin */;
+			productReference = 8D1AC9740486D14A00FE50C9 /* Transmit Plugin.qsplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -208,12 +190,19 @@
 			isa = PBXProject;
 			buildConfigurationList = 7FFF2597085E488700266176 /* Build configuration list for PBXProject "QSTransmitModule" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 0259C574FE90428111CA0C5A /* QSTransmitModule */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1AC9600486D14A00FE50C9 /* Transmit Module */,
+				8D1AC9600486D14A00FE50C9 /* Transmit Plugin */,
 			);
 		};
 /* End PBXProject section */
@@ -223,40 +212,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E11FE9590732EDEB00A043D1 /* Transmit.scpt in Resources */,
+				CDF9828B1590817400FFFA7B /* Transmit.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7F6EEADD07D3E32F00AFE018 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				$SRCROOT/Transmit.original.scpt,
-			);
-			outputPaths = (
-				$SRCROOT/Transmit.scpt,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "rm -f /Volumes/Lore/Desktop/Transmit.scpt\n/usr/bin/osacompile -x -d -o $SRCROOT/Transmit.scpt $SRCROOT/Transmit.original.scpt ";
-		};
-		E1B9F2A907A2020B00B4017B /* ShellScript */ = {
+		E1B9F2A907A2020B00B4017B /* Update Version and Documentation */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Update Version and Documentation";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "$SRCROOT/bltrversion $INFOPLIST_FILE";
+			shellScript = "\"$QS_BUILD_ROOT/Tools/bltrversion\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -265,9 +240,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDF98295159081F700FFFA7B /* Transmit.app in Sources */,
 				E188770406A3A42600B75D22 /* QSTransmitModule_Source.m in Sources */,
-				7F4EE859083570B2000731DA /* BonjourCollection.m in Sources */,
-				7F4EE85A083570B2000731DA /* DotMacCollection.m in Sources */,
 				7F4EE85B083570B2000731DA /* Favorite.m in Sources */,
 				7F4EE85C083570B2000731DA /* FavoriteCollection.m in Sources */,
 				7F4EE85D083570B2000731DA /* HistoryCollection.m in Sources */,
@@ -291,21 +265,19 @@
 /* Begin XCBuildConfiguration section */
 		7FFF2594085E488700266176 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14D9D0B210D0FC7F00BEABA0 /* QSPlugIn_Debug.xcconfig */;
+			baseConfigurationReference = 14D9D0B510D0FC7F00BEABA0 /* QSPlugIn.xcconfig */;
 			buildSettings = {
 				OTHER_LDFLAGS = "-bundle";
-				PRODUCT_NAME = "Transmit Module";
-				ZERO_LINK = YES;
+				PRODUCT_NAME = "Transmit Plugin";
 			};
 			name = Debug;
 		};
 		7FFF2595085E488700266176 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14D9D0B410D0FC7F00BEABA0 /* QSPlugIn_Release.xcconfig */;
+			baseConfigurationReference = 14D9D0B510D0FC7F00BEABA0 /* QSPlugIn.xcconfig */;
 			buildSettings = {
 				OTHER_LDFLAGS = "-bundle";
-				PRODUCT_NAME = "Transmit Module";
-				ZERO_LINK = NO;
+				PRODUCT_NAME = "Transmit Plugin";
 			};
 			name = Release;
 		};
@@ -326,7 +298,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7FFF2593085E488700266176 /* Build configuration list for PBXNativeTarget "Transmit Module" */ = {
+		7FFF2593085E488700266176 /* Build configuration list for PBXNativeTarget "Transmit Plugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7FFF2594085E488700266176 /* Debug */,
