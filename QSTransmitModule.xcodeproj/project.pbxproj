@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7F4EE85B083570B2000731DA /* Favorite.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE851083570B2000731DA /* Favorite.m */; };
-		7F4EE85C083570B2000731DA /* FavoriteCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE853083570B2000731DA /* FavoriteCollection.m */; };
-		7F4EE85D083570B2000731DA /* HistoryCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE855083570B2000731DA /* HistoryCollection.m */; };
-		7F4EE85E083570B2000731DA /* Loader.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4EE857083570B2000731DA /* Loader.m */; };
 		7FA98545096F1B8600321006 /* QSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA98543096F1B8600321006 /* QSCore.framework */; };
 		7FA98546096F1B8600321006 /* QSFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FA98544096F1B8600321006 /* QSFoundation.framework */; };
 		8D1AC9700486D14A00FE50C9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD92D38A0106425D02CA0E72 /* Cocoa.framework */; };
@@ -40,15 +36,6 @@
 		14D9D0B110D0FC7F00BEABA0 /* Developer.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Developer.xcconfig; sourceTree = "<group>"; };
 		14D9D0B510D0FC7F00BEABA0 /* QSPlugIn.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = QSPlugIn.xcconfig; sourceTree = "<group>"; };
 		14D9D0B610D0FC7F00BEABA0 /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		7F4EE850083570B2000731DA /* Favorite.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Favorite.h; sourceTree = "<group>"; };
-		7F4EE851083570B2000731DA /* Favorite.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = Favorite.m; sourceTree = "<group>"; };
-		7F4EE852083570B2000731DA /* FavoriteCollection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FavoriteCollection.h; sourceTree = "<group>"; };
-		7F4EE853083570B2000731DA /* FavoriteCollection.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = FavoriteCollection.m; sourceTree = "<group>"; };
-		7F4EE854083570B2000731DA /* HistoryCollection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HistoryCollection.h; sourceTree = "<group>"; };
-		7F4EE855083570B2000731DA /* HistoryCollection.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HistoryCollection.m; sourceTree = "<group>"; };
-		7F4EE856083570B2000731DA /* Loader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Loader.h; sourceTree = "<group>"; };
-		7F4EE857083570B2000731DA /* Loader.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = Loader.m; sourceTree = "<group>"; };
-		7F4EE858083570B2000731DA /* LocaleMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = LocaleMacros.h; sourceTree = "<group>"; };
 		7FA98543096F1B8600321006 /* QSCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA98544096F1B8600321006 /* QSFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = QSFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1AC9730486D14A00FE50C9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -59,8 +46,6 @@
 		DD92D38A0106425D02CA0E72 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		E191E090068932EF00525DB6 /* QSTransmitModule_Source.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSTransmitModule_Source.h; sourceTree = "<group>"; };
 		E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSTransmitModule_Source.m; sourceTree = "<group>"; };
-		E1EAB045068128A200774DFF /* QSTransmitModule.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSTransmitModule.m; sourceTree = "<group>"; };
-		E1EAB047068128A800774DFF /* QSTransmitModule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSTransmitModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,29 +120,10 @@
 		32DBCF9E0370C38000C91783 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				7F4EE84B083570B2000731DA /* src */,
-				E1EAB047068128A800774DFF /* QSTransmitModule.h */,
-				E1EAB045068128A200774DFF /* QSTransmitModule.m */,
 				E191E090068932EF00525DB6 /* QSTransmitModule_Source.h */,
 				E191E091068932EF00525DB6 /* QSTransmitModule_Source.m */,
 			);
 			name = Classes;
-			sourceTree = "<group>";
-		};
-		7F4EE84B083570B2000731DA /* src */ = {
-			isa = PBXGroup;
-			children = (
-				7F4EE850083570B2000731DA /* Favorite.h */,
-				7F4EE851083570B2000731DA /* Favorite.m */,
-				7F4EE852083570B2000731DA /* FavoriteCollection.h */,
-				7F4EE853083570B2000731DA /* FavoriteCollection.m */,
-				7F4EE854083570B2000731DA /* HistoryCollection.h */,
-				7F4EE855083570B2000731DA /* HistoryCollection.m */,
-				7F4EE856083570B2000731DA /* Loader.h */,
-				7F4EE857083570B2000731DA /* Loader.m */,
-				7F4EE858083570B2000731DA /* LocaleMacros.h */,
-			);
-			path = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -242,10 +208,6 @@
 			files = (
 				CDF98295159081F700FFFA7B /* Transmit.app in Sources */,
 				E188770406A3A42600B75D22 /* QSTransmitModule_Source.m in Sources */,
-				7F4EE85B083570B2000731DA /* Favorite.m in Sources */,
-				7F4EE85C083570B2000731DA /* FavoriteCollection.m in Sources */,
-				7F4EE85D083570B2000731DA /* HistoryCollection.m in Sources */,
-				7F4EE85E083570B2000731DA /* Loader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
