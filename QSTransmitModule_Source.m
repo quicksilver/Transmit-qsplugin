@@ -64,7 +64,7 @@
 	[object setIcon:[QSResourceManager imageNamed:@"com.panic.Transmit"]];	
 }
 
-- (NSImage *) iconForEntry:(NSDictionary *)dict {
+- (NSImage *)iconForEntry:(NSDictionary *)dict {
     return [QSResourceManager imageNamed:TRANSMIT_ID];
 }
 
@@ -124,10 +124,6 @@
  */
 
 
-
-
-
-
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)iObject{
     if ([action isEqualToString:@"QSTransmitUploadAction"]) {
         return [self objectsForEntry:nil];
@@ -153,8 +149,16 @@
         NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
         if (uuid) {
             TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
-            TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
-            [[transmit documents] addObject:newDocument];
+            
+            TransmitDocument *newDocument = nil;
+            
+            if ([[transmit documents] count] == 1 && ![[[[[[transmit documents] lastObject] tabs] lastObject] remoteBrowser] remote]) {
+                // don't bother creating a new window if an empty one already exists
+                newDocument = [[transmit documents] lastObject];
+            } else {
+                newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
+                [[transmit documents] addObject:newDocument];
+            }
             [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
             if (shouldMount) {
                 // close the transmit window if we're just mounting it
