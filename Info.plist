@@ -15,11 +15,11 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0.1</string>
+	<string>4.1.0</string>
 	<key>CFBundleSignature</key>
 	<string>daed</string>
 	<key>CFBundleVersion</key>
-	<string>100</string>
+	<string>101</string>
 	<key>NSPrincipalClass</key>
 	<string>QSTransmitModule</string>
 	<key>QSActions</key>
