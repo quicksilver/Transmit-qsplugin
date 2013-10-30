@@ -30,6 +30,8 @@
 			<string>QSTransmitSource</string>
 			<key>actionSelector</key>
 			<string>connectToSite:</string>
+			<key>alternateAction</key>
+			<string>QSTransmitMountAction</string>
 			<key>directTypes</key>
 			<array>
 				<string>QSTransmitSiteType</string>
@@ -37,8 +39,6 @@
 			</array>
 			<key>icon</key>
 			<string>com.panic.Transmit</string>
-			<key>alternateAction</key>
-			<string>QSTransmitMountAction</string>
 			<key>name</key>
 			<string>Connect</string>
 			<key>precedence</key>
@@ -119,15 +119,15 @@
 		<string>&lt;h2&gt;Transmit Plugin&lt;/h2&gt;
 &lt;p&gt;The Transmit Plugin allows you to interact with your Transmit favorites, upload files to them, and open and mount FTP/SFTP etc. URLs in Transmit&lt;/p&gt;
 &lt;h3&gt;Catalog&lt;/h3&gt;
-&lt;p&gt;The Transmit Plugin adds a &apos;Transmit Favorites&apos; catalog entry to the Quicksilver, which can be seen in the &apos;Plugins&apos; section of the &lt;a href=&quot;qs://preferences#QSCatalogPrefPane&quot;&gt;Catalog preferences&lt;/a&gt;. Enabling this entry means you can search for your Transmit favourites in Quicksilver&apos;s 1st pane.&lt;/p&gt;
-&lt;p&gt;You can also get a full list of your Transmit Favorites by finding &apos;Transmit.app&apos; in Quicksilver&apos;s 1st pane, and pressing the right arrow key &lt;code&gt;→&lt;/code&gt; (or the forward slash key &lt;code&gt;/&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;The Transmit Plugin adds a 'Transmit Favorites' catalog entry to the Quicksilver, which can be seen in the 'Plugins' section of the &lt;a href="qs://preferences#QSCatalogPrefPane"&gt;Catalog preferences&lt;/a&gt;. Enabling this entry means you can search for your Transmit favourites in Quicksilver's 1st pane.&lt;/p&gt;
+&lt;p&gt;You can also get a full list of your Transmit Favorites by finding 'Transmit.app' in Quicksilver's 1st pane, and pressing the right arrow key &lt;code&gt;→&lt;/code&gt; (or the forward slash key &lt;code&gt;/&lt;/code&gt;).&lt;/p&gt;
 &lt;h3&gt;Actions&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Connect&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;This action opens an FTP URL or a Transmit Favorite in Transmit. Supported URL schemes are &lt;code&gt;ftp://&lt;/code&gt;, &lt;code&gt;sftp://&lt;/code&gt; and &lt;code&gt;ftps://&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Mount as Disk&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;The &apos;Mount as Disk&apos; action uses TransmitDisk to mount the specified transmit Favorites as a mounted disk on your Desktop. This action is only valid for Transmit Favorite objects&lt;/p&gt;
+&lt;p&gt;The 'Mount as Disk' action uses TransmitDisk to mount the specified transmit Favorites as a mounted disk on your Desktop. This action is only valid for Transmit Favorite objects&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Upload to Site… and Upload File…&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;These actions upload single or multiple files to a given Transmit Favorite. The &apos;Upload to Site…&apos; action takes a list of files (using Quicksilver&apos;s comma trick) in Quicksilver&apos;s 1st pane and requires a Transmit Favorite in Quicksilver&apos;s 3rd pane. The &apos;Upload File…&apos; action is a reverse of this, requiring a Transmit Favorite in the 1st pane and a list of files in the 3rd pane.&lt;/p&gt;</string>
+&lt;p&gt;These actions upload single or multiple files to a given Transmit Favorite. The 'Upload to Site…' action takes a list of files (using Quicksilver's comma trick) in Quicksilver's 1st pane and requires a Transmit Favorite in Quicksilver's 3rd pane. The 'Upload File…' action is a reverse of this, requiring a Transmit Favorite in the 1st pane and a list of files in the 3rd pane.&lt;/p&gt;</string>
 		<key>icon</key>
 		<string>com.panic.Transmit</string>
 		<key>relatedBundles</key>
@@ -163,6 +163,11 @@
 			<key>QSTransmitSource</key>
 			<string>QSTransmitSource</string>
 		</dict>
+	</dict>
+	<key>QSRequirements</key>
+	<dict>
+		<key>version</key>
+		<string>4001</string>
 	</dict>
 </dict>
 </plist>
