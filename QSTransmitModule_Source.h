@@ -14,7 +14,7 @@
 {
     TransmitApplication *transmit;
 }
-- (NSString *)URLForTransmitDict:(NSDictionary *)dict;
-- (QSObject *)objectForFavorite:(Favorite *)curFavorite subpath:(NSString *)subpath;
-- (NSString *)URLForFavorite:(Favorite *)fav subpath:(NSString *)subpath;
+
+- (QSObject *)objectForFavorite:(TransmitFavorite *)favorite;
+
 @end

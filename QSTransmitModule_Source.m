@@ -6,9 +6,6 @@
 //  Copyright __MyCompanyName__ 2004. All rights reserved.
 //
 
-#import "src/FavoriteCollection.h"
-#import "src/Favorite.h"
-
 #import "QSTransmitModule_Source.h"
 
 #define TRANSMIT_ID @"com.panic.Transmit"
@@ -17,23 +14,6 @@
 
 #define kValidURLSchemes [NSArray arrayWithObjects:@"ftp",@"sftp",@"ftps",nil]
 
-
-@implementation FavoriteCollection (BLTRConvenience)
-+ (FavoriteCollection *)mainCollection{
-	NSString *prefsPath = [@"~/Library/Preferences/com.panic.Transmit.plist" stringByExpandingTildeInPath];
-	NSDictionary *prefsDict = [NSDictionary dictionaryWithContentsOfFile:prefsPath];
-	if ( prefsDict )
-	{
-		NSData *storedData = [prefsDict objectForKey:@"FavoriteCollections"];
-		if ( storedData )
-		{		
-			return [NSKeyedUnarchiver unarchiveObjectWithData:storedData];
-		}
-	}
-	return nil;
-}
-
-@end
 
 //NSURLPboardType
 @implementation QSTransmitSource
@@ -76,200 +56,56 @@
 #pragma mark Object Source Methods
 
 - (BOOL)indexIsValidFromDate:(NSDate *)indexDate forEntry:(NSDictionary *)theEntry{
-	NSDate *modDate=[[[NSFileManager defaultManager] attributesOfItemAtPath:[@"~/Library/Preferences/com.panic.Transmit.plist" stringByStandardizingPath] error:nil]fileModificationDate];
-	return [modDate compare:indexDate]==NSOrderedAscending;
+    // unconditionally scan if Transmit is running, otherwise don't scan. Scanning requires Transmit to be launched; we don't want to inadvertantly start Transmit every time a catalog scan is performed
+    return ![transmit isRunning];
 }
 
 - (void)setQuickIconForObject:(QSObject *)object{
 	[object setIcon:[QSResourceManager imageNamed:@"com.panic.Transmit"]];	
 }
 
-- (NSImage *) iconForEntry:(NSDictionary *)dict {
+- (NSImage *)iconForEntry:(NSDictionary *)dict {
     return [QSResourceManager imageNamed:TRANSMIT_ID];
 }
 
 - (BOOL)loadChildrenForObject:(QSObject *)object {
 	if ([object containsType:QSFilePathType]){
-		[object setChildren:[self objectsForEntry:nil]];
-		return YES;   	
-	} else {
-		if([object objectForMeta:@"QSObjectSubpath"])return NO;
-		NSString *uuid=[object objectForType:QSTransmitSiteType];
-			Favorite *fav=[[FavoriteCollection mainCollection]itemWithUUID:uuid];
-		NSArray *paths=[fav remotePathShortcuts];
-		//NSLog(@"path %@ %@ %@",uuid,[FavoriteCollection mainCollection],paths);
-		NSMutableArray *objects=[NSMutableArray array];
-		for(NSString * path in paths){
-			QSObject *newObject=[self objectForFavorite:fav subpath:path];
-			[objects addObject:newObject];
-		}
-		[object setChildren:objects];
+        NSArray *favorites = [QSLib arrayForType:QSTransmitSiteType];
+        if (![transmit isRunning] && [favorites count]) {
+            // If transmit isn't running, and we have the favorites already stored in the QS catalog, use those. Otherwise we have to launch Transmit for SB stuff (ugh)
+            [object setChildren:favorites];
+        } else {
+            [object setChildren:[self objectsForEntry:nil]];
+        }
 		return YES;
 	}
 	return NO;
 }
 
-//- (NSString *)identifierForObject:(id <QSObject>)object{
-//   return [@"[Sherlock Channel]:"stringByAppendingString:[object objectForType:QSSherlockChannelIDType]];
-//}
-
 
 - (NSArray *) objectsForEntry:(NSDictionary *)theEntry{
 	
-	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:1];
-	QSObject *newObject;
-	
-	{
-		FavoriteCollection *rootCollection=[FavoriteCollection mainCollection];
-		NSEnumerator *enumerator = [[rootCollection allObjects] objectEnumerator];
-		FavoriteCollection *curCollection;
-		
-		//NSLog(@"Loaded favorites");
-		
-		while ( (curCollection = [enumerator nextObject]) != nil )
-		{
-			//	NSLog([curCollection name]);
-			
-			NSEnumerator *subEnumerator = [[curCollection allObjects] objectEnumerator];
-			Favorite *curFavorite;
-			if ([curCollection type]!=kFolderType) continue;
-			
-			while ( (curFavorite = [subEnumerator nextObject]) != nil )
-			{
-				
-				newObject=[self objectForFavorite:curFavorite subpath:nil];
-				[objects addObject:newObject];
-				
-				
-				//NSLog(@"\t%@", [curFavorite nickname]);
-			}
-		}
-	}
-	
+	NSMutableArray *objects=[NSMutableArray array];
+    
+    [[transmit favorites] enumerateObjectsUsingBlock:^(TransmitFavorite *favorite, NSUInteger idx, BOOL *stop) {
+        [objects addObject:[self objectForFavorite:favorite]];
+    }];
 	return objects;
 }
 
 
-- (QSObject *)objectForFavorite:(Favorite *)curFavorite subpath:(NSString *)subpath{
-	NSString *url=[self URLForFavorite:curFavorite subpath:subpath];
-	NSString *name=[curFavorite nickname];
-	if (subpath)name=[name stringByAppendingFormat:@" - %@",[subpath lastPathComponent]];
-	QSObject *newObject=[QSObject objectWithName:name];
-				//NSString *url=[self URLForNewTransmitDict:dict];
-				
-				[newObject setObject:[curFavorite UUID] forType:QSTransmitSiteType];
-				[newObject setObject:url forType:QSURLType];
-				[newObject setPrimaryType:QSTransmitSiteType];
-				[newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-				[newObject setObject:subpath forMeta:@"QSObjectSubpath"];
-				[newObject setIdentifier:[curFavorite UUID]];
-				
-				[newObject setDetails:subpath?subpath:[url stringByReplacing:@":PasswordInKeychain" with:@""]];
-				return newObject;
-}
+- (QSObject *)objectForFavorite:(TransmitFavorite *)favorite {
+	NSString *name=[favorite name];
+    QSObject *newObject=[QSObject objectWithName:name];
 
-
-/*
- tell application "Transmit"
-	run
-	set theDocument to make new document
-	ignoring application responses
- connect (theDocument) to "macsavants.com" as user "nicholas" with password "PasswordInKeychain" with connection type FTP
- activate
-	end ignoring
- end tell
- 
- */
-
-- (NSString *)URLForTransmitDict:(NSDictionary *)dict{
-	NSString *initialPath=[dict objectForKey:@"InitialPath"];
-	NSString *protocol=[dict objectForKey:@"Protocol"];
-	NSString *remoteHost=[dict objectForKey:@"RemoteHost"];
-	NSString *remotePassword=[dict objectForKey:@"RemotePassword"];
-	NSString *remotePort=[dict objectForKey:@"RemotePort"];
-	NSString *remoteUser=[dict objectForKey:@"RemoteUser"];
-	
-	//	if ([remotePassword isEqualToString:@"PasswordInKeychain"])remotePassword=@"";
-	
-	NSString *authent=nil;
-	if ([remoteUser length]){
-		if ([remotePassword length]) authent=[NSString stringWithFormat:@"%@:%@",[remoteUser stringByReplacing:@"@" with:@"%40"],remotePassword];
-		else authent=remoteUser;
-	}
-	
-	NSString *string=[NSString stringWithFormat:@"%@://%@%@%@%@",
-		[protocol lowercaseString],
-		([authent length]?[authent stringByAppendingString:@"@"]:@""),
-		remoteHost,
-		(remotePort?[@":" stringByAppendingString:remotePort]:@""),
-		([initialPath length]?[@"/" stringByAppendingString:initialPath]:@"")
-		];
-	
-	return string;
-}
-- (NSString *)URLForFavorite:(Favorite *)fav subpath:(NSString *)subpath{
-	NSString *initialPath=subpath?subpath:[fav initialRemotePath];
-	if (initialPath && ![initialPath hasPrefix:@"/"]) {
-		initialPath=[@"/" stringByAppendingString:initialPath];
-	}
-	NSString *protocol=[fav protocol];
-	NSString *remoteHost=[fav server];
-	NSString *remotePassword=nil;
-	NSString *remotePort=[fav port]?[NSString stringWithFormat:@"%d",[fav port]]:nil;
-	NSString *remoteUser=[fav username];
-	BOOL prompt=[fav promptForPassword];
-	if (!prompt)
-		remotePassword=@"PasswordInKeychain";
-	
-	//	if ([remotePassword isEqualToString:@"PasswordInKeychain"])remotePassword=@"";
-	
-	NSString *authent=nil;
-	if ([remoteUser length]){
-		if ([remotePassword length]) authent=[NSString stringWithFormat:@"%@:%@",[remoteUser stringByReplacing:@"@" with:@"%40"],remotePassword];
-		else authent=remoteUser;
-	}
-	
-	NSString *string=[NSString stringWithFormat:@"%@://%@%@%@%@",
-		[protocol lowercaseString],
-		([authent length]?[authent stringByAppendingString:@"@"]:@""),
-		remoteHost,
-		(remotePort?[@":" stringByAppendingString:remotePort]:@""),
-		([initialPath length]?[initialPath URLEncoding]:@"")
-		];
-	
-	return string;
-}
-
-
-
-- (NSString *)URLForNewTransmitDict:(NSDictionary *)dict{
-	NSString *initialPath=[dict objectForKey:@"com_panic_transmit_remotePath"];
-	NSString *protocol=[dict objectForKey:@"com_panic_transmit_protocol"];
-	NSString *remoteHost=[dict objectForKey:@"com_panic_transmit_server"];
-	NSString *remotePassword=nil; //[dict objectForKey:@"RemotePassword"];
-	BOOL prompt=[[dict objectForKey:@"com_panic_transmit_promptPassword"]boolValue];
-	if (!prompt)
-		remotePassword=@"PasswordInKeychain";
-	NSString *remotePort=[dict objectForKey:@"com_panic_transmit_port"];
-	NSString *remoteUser=[dict objectForKey:@"com_panic_transmit_username"];
-	
-	//	if ([remotePassword isEqualToString:@"PasswordInKeychain"])remotePassword=@"";
-	
-	NSString *authent=nil;
-	if ([remoteUser length]){
-		if ([remotePassword length]) authent=[NSString stringWithFormat:@"%@:%@",[remoteUser stringByReplacing:@"@" with:@"%40"],remotePassword];
-		else authent=remoteUser;
-	}
-	
-	NSString *string=[NSString stringWithFormat:@"%@://%@%@%@%@",
-		[protocol lowercaseString],
-		([authent length]?[authent stringByAppendingString:@"@"]:@""),
-		remoteHost,
-		(remotePort?remotePort:@""),
-		([initialPath length]?[@"/" stringByAppendingString:initialPath]:@"")
-		];
-	
-	return string;
+    [newObject setObject:[favorite identifier] forType:QSTransmitSiteType];
+    [newObject setObject:[favorite address] forType:QSURLType];
+    [newObject setPrimaryType:QSTransmitSiteType];
+    [newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
+    [newObject setIdentifier:[favorite identifier]];
+    
+    [newObject setDetails:[favorite address]];
+    return newObject;
 }
 
 
@@ -286,10 +122,6 @@
 	 return YES;
  }
  */
-
-
-
-
 
 
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)iObject{
@@ -312,12 +144,21 @@
     if (!shouldMount) {
         [transmit activate];
     }
+    
     for (QSObject *individualObject in [dObject splitObjects]) {
         NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
         if (uuid) {
             TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
-            TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
-            [[transmit documents] addObject:newDocument];
+            
+            TransmitDocument *newDocument = nil;
+            
+            if ([[transmit documents] count] == 1 && ![[[[[[transmit documents] lastObject] tabs] lastObject] remoteBrowser] remote]) {
+                // don't bother creating a new window if an empty one already exists
+                newDocument = [[transmit documents] lastObject];
+            } else {
+                newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
+                [[transmit documents] addObject:newDocument];
+            }
             [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
             if (shouldMount) {
                 // close the transmit window if we're just mounting it
