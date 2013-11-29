@@ -8,27 +8,42 @@
 
 #import "QSTransmitModule_Source.h"
 
+#import "Transmit.h"
+
 #define TRANSMIT_ID @"com.panic.Transmit"
 #define QSTransmitSiteType @"QSTransmitSiteType"
 #define kQSTransmitConnectAction @"QSTransmitConnectAction"
 
 #define kValidURLSchemes [NSArray arrayWithObjects:@"ftp",@"sftp",@"ftps",nil]
 
+// Keys for Favorites metadata
 
-//NSURLPboardType
+#define kTransmitFavoriteDockSendEnabled @"com_panic_transmit_dockSendEnabled"
+#define kTransmitFavoriteNickname @"com_panic_transmit_nickname"
+#define kTransmitFavoritePassiveModeEnabled @"com_panic_transmit_passiveModeEnabled"
+#define kTransmitFavoritePromptPassword @"com_panic_transmit_promptPassword"
+#define kTransmitFavoriteProtocol @"com_panic_transmit_protocol"
+#define kTransmitFavoriteServer @"com_panic_transmit_server"
+#define kTransmitFavoriteUUID @"com_panic_transmit_uniqueIdentifier"
+#define kTransmitFavoriteUserName @"com_panic_transmit_username"
+
 @implementation QSTransmitSource
 
--(id)init {
-    if (self = [super init]) {
-        transmit = [[SBApplication applicationWithBundleIdentifier:@"com.panic.Transmit"] retain];
-    }
-    return self;
-}
-
--(void)dealloc {
-    [transmit release];
+- (void)dealloc {
+    [transmitApp release];
     [super dealloc];
 }
+
+- (TransmitApplication *)transmitApp {
+    @synchronized (self) {
+        if (!transmitApp) {
+            transmitApp = [[SBApplication applicationWithBundleIdentifier:TRANSMIT_ID] retain];
+        }
+    }
+
+    return transmitApp;
+}
+
 
 #pragma mark Object Action Methods
 
@@ -55,13 +70,12 @@
 
 #pragma mark Object Source Methods
 
-- (BOOL)indexIsValidFromDate:(NSDate *)indexDate forEntry:(NSDictionary *)theEntry{
-    // unconditionally scan if Transmit is running, otherwise don't scan. Scanning requires Transmit to be launched; we don't want to inadvertantly start Transmit every time a catalog scan is performed
-    return ![transmit isRunning];
+- (BOOL)indexIsValidFromDate:(NSDate *)indexDate forEntry:(NSDictionary *)theEntry {
+    return NO;
 }
 
 - (void)setQuickIconForObject:(QSObject *)object{
-	[object setIcon:[QSResourceManager imageNamed:@"com.panic.Transmit"]];	
+	[object setIcon:[QSResourceManager imageNamed:TRANSMIT_ID]];
 }
 
 - (NSImage *)iconForEntry:(NSDictionary *)dict {
@@ -71,7 +85,7 @@
 - (BOOL)loadChildrenForObject:(QSObject *)object {
 	if ([object containsType:QSFilePathType]){
         NSArray *favorites = [QSLib arrayForType:QSTransmitSiteType];
-        if (![transmit isRunning] && [favorites count]) {
+        if (!self.transmitApp && [favorites count]) {
             // If transmit isn't running, and we have the favorites already stored in the QS catalog, use those. Otherwise we have to launch Transmit for SB stuff (ugh)
             [object setChildren:favorites];
         } else {
@@ -82,47 +96,50 @@
 	return NO;
 }
 
+- (NSURL *)transmitMetadataURL {
+    NSString *metadataPath = [[@"~/Library/Application Support/Transmit/Metadata" stringByExpandingTildeInPath] stringByStandardizingPath];
 
-- (NSArray *) objectsForEntry:(NSDictionary *)theEntry{
-	
-	NSMutableArray *objects=[NSMutableArray array];
-    
-    [[transmit favorites] enumerateObjectsUsingBlock:^(TransmitFavorite *favorite, NSUInteger idx, BOOL *stop) {
-        [objects addObject:[self objectForFavorite:favorite]];
+    return [NSURL fileURLWithPath:metadataPath isDirectory:YES];
+}
+
+- (NSArray *)objectsForEntry:(NSDictionary *)theEntry {
+    NSError *error = nil;
+    NSArray *favorites = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[self transmitMetadataURL]
+                                                       includingPropertiesForKeys:nil
+                                                                          options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                            error:&error];
+
+    if (!favorites) {
+        NSLog(@"Failed to scan Transmit favorites: %@", error);
+        return nil;
+    }
+
+	NSMutableArray *objects = [NSMutableArray array];
+
+    [favorites enumerateObjectsUsingBlock:^(NSURL *favoriteURL, NSUInteger idx, BOOL *stop) {
+        NSDictionary *favorite = [NSDictionary dictionaryWithContentsOfURL:favoriteURL];
+        [objects addObject:[self objectForFavoriteDictionary:favorite]];
     }];
+
 	return objects;
 }
 
+- (QSObject *)objectForFavoriteDictionary:(NSDictionary *)favorite {
+    NSString *name = favorite[kTransmitFavoriteNickname];
+    NSString *address = favorite[kTransmitFavoriteServer];
+    NSString *identifier = favorite[kTransmitFavoriteUUID];
 
-- (QSObject *)objectForFavorite:(TransmitFavorite *)favorite {
-	NSString *name=[favorite name];
-    QSObject *newObject=[QSObject objectWithName:name];
+    QSObject *newObject = [QSObject objectWithName:name];
 
-    [newObject setObject:[favorite identifier] forType:QSTransmitSiteType];
-    [newObject setObject:[favorite address] forType:QSURLType];
+    [newObject setObject:identifier forType:QSTransmitSiteType];
+    [newObject setObject:address forType:QSURLType];
     [newObject setPrimaryType:QSTransmitSiteType];
     [newObject setObject:TRANSMIT_ID forMeta:@"QSPreferredApplication"];
-    [newObject setIdentifier:[favorite identifier]];
-    
-    [newObject setDetails:[favorite address]];
+    [newObject setIdentifier:identifier];
+
+    [newObject setDetails:address];
     return newObject;
 }
-
-
-// Object Handler Methods
-
-/*
- - (void)setQuickIconForObject:(QSObject *)object{
-	 [object setIcon:nil]; // An icon that is either already in memory or easy to load
- }
- - (BOOL)loadIconForObject:(QSObject *)object{
-	 return NO;
-	 id data=[object objectForType:QSTransmitModuleType];
-	 [object setIcon:nil];
-	 return YES;
- }
- */
-
 
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)iObject{
     if ([action isEqualToString:@"QSTransmitUploadAction"]) {
@@ -142,22 +159,22 @@
 
 -(QSObject *)connectToSite:(QSObject* )dObject shouldMount:(BOOL)shouldMount{
     if (!shouldMount) {
-        [transmit activate];
+        [[self transmitApp] activate];
     }
-    
+
     for (QSObject *individualObject in [dObject splitObjects]) {
         NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
         if (uuid) {
-            TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
-            
+            TransmitFavorite *theFavorite = [[[self transmitApp] favorites] objectWithID:uuid];
+
             TransmitDocument *newDocument = nil;
-            
-            if ([[transmit documents] count] == 1 && ![[[[[[transmit documents] lastObject] tabs] lastObject] remoteBrowser] remote]) {
+
+            if ([[[self transmitApp] documents] count] == 1 && ![[[[[[[self transmitApp] documents] lastObject] tabs] lastObject] remoteBrowser] remote]) {
                 // don't bother creating a new window if an empty one already exists
-                newDocument = [[transmit documents] lastObject];
+                newDocument = [[[self transmitApp] documents] lastObject];
             } else {
-                newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
-                [[transmit documents] addObject:newDocument];
+                newDocument = [[[[[self transmitApp] classForScriptingClass:@"document"] alloc] init] autorelease];
+                [[[self transmitApp] documents] addObject:newDocument];
             }
             [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
             if (shouldMount) {
@@ -173,35 +190,36 @@
     }
 return nil;
 }
+
 -(QSObject *)uploadFiles:(QSObject *)dObject toSite:(QSObject *)iObject{
-	//NSLog(@"objects %@ %@",dObject,iObject);	
-    
+	//NSLog(@"objects %@ %@",dObject,iObject);
+
     // incase the user used the comma trick on the 3rd pane
     for (QSObject *individualObject in [iObject splitObjects]) {
-        
+
         NSString *uuid=[iObject objectForType:QSTransmitSiteType];
-        
+
         // get the Tranmit favorite
-        TransmitFavorite *theFavorite = [[transmit favorites] objectWithID:uuid];
+        TransmitFavorite *theFavorite = [[[self transmitApp] favorites] objectWithID:uuid];
 
         if (!theFavorite) {
             NSBeep();
             NSLog(@"Unable to locate the favorite for %@",iObject);
         }
-        
-        TransmitDocument *newDocument = [[[[transmit classForScriptingClass:@"document"] alloc] init] autorelease];
-        [[transmit documents] addObject:newDocument];
-        
+
+        TransmitDocument *newDocument = [[[[[self transmitApp] classForScriptingClass:@"document"] alloc] init] autorelease];
+        [[[self transmitApp] documents] addObject:newDocument];
+
         [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:NO];
-        
+
         for (NSString *path in [dObject validPaths]) {
             [[[newDocument currentTab] remoteBrowser] uploadItemAtPath:path to:nil withResumeMode:TransmitResumetypeAsk continueAfterError:YES usingSkipRules:nil];
         }
-        
+
         [newDocument closeSaving:TransmitSaveOptionsNo savingIn:nil];
-        
+
     }
-	return nil;	
+	return nil;
 }
 
 @end
