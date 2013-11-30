@@ -168,6 +168,10 @@
         NSString *uuid = [individualObject objectForType:QSTransmitSiteType];
         if (uuid) {
             TransmitFavorite *theFavorite = [[[self transmitApp] favorites] objectWithID:uuid];
+            if (!theFavorite) {
+                NSBeep();
+                NSLog(@"Unable to locate the favorite for %@", uuid);
+            }
 
             TransmitDocument *newDocument = nil;
 
@@ -178,7 +182,12 @@
                 newDocument = [[[[[self transmitApp] classForScriptingClass:@"document"] alloc] init] autorelease];
                 [[[self transmitApp] documents] addObject:newDocument];
             }
-            [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
+            BOOL res = [[newDocument currentTab] connectTo:theFavorite toAddress:[theFavorite address] asUser:[theFavorite userName] usingPort:[theFavorite port] withInitialPath:[theFavorite remotePath] withPassword:[theFavorite password] withProtocol:[theFavorite protocol] mount:shouldMount];
+
+            if (!res) {
+                NSLog(@"Failed to connect to %@", [theFavorite identifier]);
+                return nil;
+            }
             if (shouldMount) {
                 // close the transmit window if we're just mounting it
                 [newDocument closeSaving:TransmitSaveOptionsNo savingIn:nil];
@@ -190,7 +199,7 @@
                  }
         }
     }
-return nil;
+    return nil;
 }
 
 -(QSObject *)uploadFiles:(QSObject *)dObject toSite:(QSObject *)iObject{
