@@ -38,6 +38,8 @@
     @synchronized (self) {
         if (!transmitApp) {
             transmitApp = [[SBApplication applicationWithBundleIdentifier:TRANSMIT_ID] retain];
+            [transmitApp setSendMode:kAEWaitReply];
+            [transmitApp setTimeout:60];
         }
     }
 
