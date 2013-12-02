@@ -6,15 +6,10 @@
 //  Copyright __MyCompanyName__ 2004. All rights reserved.
 //
 
+@class TransmitApplication;
 
-#import "QSTransmitModule_Source.h"
-#import "Transmit.h"
-
-@interface QSTransmitSource : QSObjectSource
-{
-    TransmitApplication *transmit;
+@interface QSTransmitSource : QSObjectSource {
+    TransmitApplication *transmitApp;
 }
-
-- (QSObject *)objectForFavorite:(TransmitFavorite *)favorite;
 
 @end
